@@ -32,29 +32,27 @@ class ChessGame
     #initPieces = () => {
         for(let i = 0; i < 8; i ++)
         {
-            this.whitePieces.push({type: 'pawn', img: this.images['white-pawn'], pos: [i, 6]});
-            this.blackPieces.push({type: 'pawn', img: this.images['black-pawn'], pos: [i, 1]});
+            this.whitePieces.push({color: 'white', type: 'pawn', img: this.images['white-pawn'], pos: [i, 6]});
+            this.blackPieces.push({color: 'black', type: 'pawn', img: this.images['black-pawn'], pos: [i, 1]});
         }
-        this.whitePieces.push({type: 'rook', img: this.images['white-rook'], pos: [0, 7]});
-        this.whitePieces.push({type: 'rook', img: this.images['white-rook'], pos: [7, 7]});
-        this.whitePieces.push({type: 'knight', img: this.images['white-knight'], pos: [1, 7]});
-        this.whitePieces.push({type: 'knight', img: this.images['white-knight'], pos: [6, 7]});
-        this.whitePieces.push({type: 'bishop', img: this.images['white-bishop'], pos: [2, 7]});
-        this.whitePieces.push({type: 'bishop', img: this.images['white-bishop'], pos: [5, 7]});   
-        this.whitePieces.push({type: 'queen', img: this.images['white-queen'], pos: [3, 7]});   
-        this.whitePieces.push({type: 'king', img: this.images['white-king'], pos: [4, 7]});   
+        this.whitePieces.push({color: 'white', type: 'rook', img: this.images['white-rook'], pos: [0, 7]});
+        this.whitePieces.push({color: 'white', type: 'rook', img: this.images['white-rook'], pos: [7, 7]});
+        this.whitePieces.push({color: 'white', type: 'knight', img: this.images['white-knight'], pos: [1, 7]});
+        this.whitePieces.push({color: 'white', type: 'knight', img: this.images['white-knight'], pos: [6, 7]});
+        this.whitePieces.push({color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: [2, 7]});
+        this.whitePieces.push({color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: [5, 7]});   
+        this.whitePieces.push({color: 'white', type: 'queen', img: this.images['white-queen'], pos: [3, 7]});   
+        this.whitePieces.push({color: 'white', type: 'king', img: this.images['white-king'], pos: [4, 7]});   
 
-
-        this.blackPieces.push({type: 'rook', img: this.images['black-rook'], pos: [0, 0]});
-        this.blackPieces.push({type: 'rook', img: this.images['black-rook'], pos: [7, 0]});
-        this.blackPieces.push({type: 'knight', img: this.images['black-knight'], pos: [1, 0]});
-        this.blackPieces.push({type: 'knight', img: this.images['black-knight'], pos: [6, 0]});
-        this.blackPieces.push({type: 'bishop', img: this.images['black-bishop'], pos: [2, 0]});
-        this.blackPieces.push({type: 'bishop', img: this.images['black-bishop'], pos: [5, 0]}); 
-        this.blackPieces.push({type: 'queen', img: this.images['black-queen'], pos: [3, 0]});   
-        this.blackPieces.push({type: 'king', img: this.images['black-king'], pos: [4, 0]});  
+        this.blackPieces.push({color: 'black', type: 'rook', img: this.images['black-rook'], pos: [0, 0]});
+        this.blackPieces.push({color: 'black', type: 'rook', img: this.images['black-rook'], pos: [7, 0]});
+        this.blackPieces.push({color: 'black', type: 'knight', img: this.images['black-knight'], pos: [1, 0]});
+        this.blackPieces.push({color: 'black', type: 'knight', img: this.images['black-knight'], pos: [6, 0]});
+        this.blackPieces.push({color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: [2, 0]});
+        this.blackPieces.push({color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: [5, 0]}); 
+        this.blackPieces.push({color: 'black', type: 'queen', img: this.images['black-queen'], pos: [3, 0]});   
+        this.blackPieces.push({color: 'black', type: 'king', img: this.images['black-king'], pos: [4, 0]});  
     }
-
     // consider making canvas constructor arg
     drawBoard = (canvas) => {
         console.log(this.needLoaded)
