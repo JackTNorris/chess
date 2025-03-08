@@ -73,6 +73,30 @@ class ChessGame
         // keeping track of black and white
         const directionality = piece.color == 'white' ? -1 : 1
         let res = []
+        const getAdjacent = (pos, xSlide, ySlide) => {
+            const temp_res = []
+            for(let i = 1; i < 8; i++)
+            {
+                if (this.board[piece.pos[0] + (i * xSlide)] == undefined)
+                {
+                    break
+                }
+                if ((piece.pos[1] + (i * ySlide)) >= this.board.length)
+                {
+                    break
+                }
+                let temp = this.board[piece.pos[0] + (i * xSlide)][piece.pos[1] + (i * ySlide)]
+                if (temp == null || temp.color != piece.color)
+                {
+                    temp_res.push([piece.pos[0] + (i * xSlide), piece.pos[1] + (i * ySlide)])
+                }
+                else
+                {
+                    break
+                }
+            }
+            return temp_res
+        }
         switch(piece.type)
         {
             case 'pawn':
@@ -119,36 +143,21 @@ class ChessGame
                 return res
             case 'bishop':
                 // function to "splay out" and find possible moves along vector (xSlie, ySlide)
-                const getDiagonals = (pos, xSlide, ySlide) => {
-                    const temp_res = []
-                    for(let i = 1; i < 8; i++)
-                    {
-                        if (this.board[piece.pos[0] + (i * xSlide)] == undefined)
-                        {
-                            break
-                        }
-                        if ((piece.pos[1] + (i * ySlide)) >= this.board.length)
-                        {
-                            break
-                        }
-                        let temp = this.board[piece.pos[0] + (i * xSlide)][piece.pos[1] + (i * ySlide)]
-                        if (temp == null || temp.color != piece.color)
-                        {
-                            temp_res.push([piece.pos[0] + (i * xSlide), piece.pos[1] + (i * ySlide)])
-                        }
-                        else
-                        {
-                            break
-                        }
-                    }
-                    return temp_res
-                }
-                res = res.concat(getDiagonals(piece.pos, 1, 1))
-                res = res.concat(getDiagonals(piece.pos, 1, -1))
-                res = res.concat(getDiagonals(piece.pos, -1, 1))
-                res = res.concat(getDiagonals(piece.pos, -1, -1))
+                res = res.concat(getAdjacent(piece.pos, 1, 1))
+                res = res.concat(getAdjacent(piece.pos, 1, -1))
+                res = res.concat(getAdjacent(piece.pos, -1, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, -1))
                 return res
-                
+            case 'rook':
+                res = res.concat(getAdjacent(piece.pos, 1, 0))
+                res = res.concat(getAdjacent(piece.pos, 0, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, 0))
+                res = res.concat(getAdjacent(piece.pos, 0, -1))
+                return res
+            case 'queen':
+                res = this.getPossibleMoves({...piece, type: 'rook'})
+                res = res.concat(this.getPossibleMoves({...piece, type: 'bishop'}))
+                return res
         }
     }
 
