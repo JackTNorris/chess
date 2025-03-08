@@ -1,12 +1,18 @@
 class ChessGame
 {
-    constructor(boardWidth, boardHeight){
+    constructor(boardWidth, boardHeight, perspective){
+        this.perspective = perspective
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
         this.whitePieces = [];
         this.blackPieces = [];
         this.needLoaded = 12;
         this.images = {};
+        this.#initImages()
+        this.#initPieces()
+    }
+
+    #initImages = () => {
         const temp = ["pawn", "knight", "bishop", "king", "queen", "rook"];
         for(let i = 0; i < temp.length; i++)
         {
@@ -19,11 +25,11 @@ class ChessGame
             this.images[whiteName].onload = () => {this.needLoaded--;};
             this.images[blackName].onload = () => {this.needLoaded--;};
         }
-        this.initPieces()
     }
 
+
     // optimize this
-    initPieces = () => {
+    #initPieces = () => {
         for(let i = 0; i < 8; i ++)
         {
             this.whitePieces.push({type: 'pawn', img: this.images['white-pawn'], pos: [i, 6]});
@@ -68,11 +74,12 @@ class ChessGame
     }
     renderPieces = (canvas) => {
         const ctx = canvas.getContext("2d");
+        const isWhite = this.perspective == "white"
         this.blackPieces.forEach(piece => {
-            ctx.drawImage(piece.img, piece.pos[0] * 100, piece.pos[1] * 100, 100, 100)
+            ctx.drawImage(piece.img, (isWhite ? piece.pos[0] : (-piece.pos[0] + 7)) * 100, (isWhite ? piece.pos[1] : (-piece.pos[1] + 7)) * 100, 100, 100)
         })
         this.whitePieces.forEach(piece => {
-            ctx.drawImage(piece.img, piece.pos[0] * 100, piece.pos[1] * 100, 100, 100)
+            ctx.drawImage(piece.img,(isWhite ? piece.pos[0] : (-piece.pos[0] + 7)) * 100, (isWhite ? piece.pos[1] : (-piece.pos[1] + 7)) * 100, 100, 100)
         })
     }
 }
