@@ -17,15 +17,22 @@
                 if (board != null)
                 {
                     setTimeout(() => {
-                        chessGame.renderBoard(board)
+                        chessGame.renderGame(board)
                     }, 1000)
                     board.addEventListener('click', (e) => {
                         const x = e.offsetX;
                         const y = e.offsetY;
-                        const square = chessGame.getClickedSquare(x, y)
-                        chessGame.onClickSquare(square[0], square[1], board)
-                        chessGame.renderBoard(board)
+                        const square = chessGame.getGridLocation(x, y)
+                        chessGame.onClickSquare(square[0], square[1])
+                        chessGame.renderGame(board)
                     });
+                    board.addEventListener('mousemove', (e) => {
+                        const x = e.offsetX;
+                        const y = e.offsetY;
+                        const square = chessGame.getGridLocation(x, y)
+                        chessGame.setHoveredSquare(...square)
+                        chessGame.renderGame(board)
+                    })
                 }            
             });
 

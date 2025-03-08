@@ -5,17 +5,20 @@ class ChessGame
         this.perspective = perspective
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
-        this.whitePieces = [];
-        this.blackPieces = [];
+        // this.whitePieces = [];
+        // this.blackPieces = [];
         this.needLoaded = 12;
         this.images = {};
-        this.selectedSquare = null
-        this.possibleSquares = null
+        this.selectedSquare = null;
+        this.possibleSquares = null;
+        this.hoveredSquare = null;
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
         console.log(this.board)
         this.#initImages()
         this.#initPieces()
     }
+
+    setHoveredSquare = (x, y) => this.hoveredSquare = [x, y]
 
     resize = (canvas, boardWidth, boardHeight) => {
         this.boardHeight = boardHeight
@@ -29,9 +32,19 @@ class ChessGame
         {
             this.selectedSquare = [x, y]
         }
+        else if (this.selectedSquare != null)
+        {
+            console.log("selected square")
+            console.log(this.selectedSquare)
+            const pieceToMove = this.board[this.selectedSquare[0]][this.selectedSquare[1]];
+            pieceToMove.pos = [x, y]
+            this.board[x][y] = pieceToMove;
+            this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
+            this.selectedSquare = null;
+        }
     }
 
-    getClickedSquare = (mouseX, mouseY) => {
+    getGridLocation = (mouseX, mouseY) => {
         const x = Math.floor(Math.min(mouseX, this.boardWidth) / this.squareSize)
         const y = Math.floor(Math.min(mouseY, this.boardHeight) / this.squareSize)
         return [x, y]
@@ -103,22 +116,29 @@ class ChessGame
         this.board[4][0] = {color: 'black', type: 'king', img: this.images['black-king'], pos: [4, 0]};
     }
     // consider making canvas constructor arg
-    drawBoard = (canvas) => {
+    renderBoard = (canvas) => {
         const ctx = canvas.getContext("2d");
         let flipper = false
         for(let i = 0; i < this.boardHeight; i += this.squareSize)
         {
+            ctx.strokeStyle = "black"
             // for checkered pattern
             flipper = !flipper
             for(let j = 0; j < this.boardWidth; j += this.squareSize)
             {
-                ctx.fillStyle = flipper ? "white" : "green"
+                ctx.fillStyle = flipper ? "rgb(234, 245, 230)" : "rgb(86, 145, 64)"
                 if(this.selectedSquare && i / this.squareSize == this.selectedSquare[0] && j / this.squareSize == this.selectedSquare[1])
                 {
                     ctx.fillStyle = "rgb(215, 245, 66)"
                 }
                 flipper = !flipper
                 ctx.fillRect(i, j, this.boardWidth / 8, this.boardHeight / 8);
+                if(this.hoveredSquare && i / this.squareSize == this.hoveredSquare[0] && j / this.squareSize == this.hoveredSquare[1])
+                {
+                    ctx.strokeStyle = 'red';
+                    ctx.strokeRect(i, j,  this.boardWidth / 8, this.boardHeight / 8)
+                    ctx.strokeStyle = null;
+                }
             }
         }
     }
@@ -132,10 +152,8 @@ class ChessGame
             ctx.drawImage(piece.img,(isWhite ? piece.pos[0] : (-piece.pos[0] + 7)) * this.squareSize, (isWhite ? piece.pos[1] : (-piece.pos[1] + 7)) * this.squareSize, this.squareSize, this.squareSize)
         })
     }
-    renderBoard = (canvas) => {
-        const context = canvas.getContext('2d');
-        // context.clearRect(0, 0, canvas.width, canvas.height);
-        this.drawBoard(canvas)
+    renderGame = (canvas) => {
+        this.renderBoard(canvas)
         const ctx = canvas.getContext("2d");
         const isWhite = this.perspective == "white"
         this.board.forEach(row => {
