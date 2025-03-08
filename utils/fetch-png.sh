@@ -1,0 +1,1 @@
+wget https://upload.wikimedia.org/wikipedia/commons/8/81/Chess_bdt60.png
