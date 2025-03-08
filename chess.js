@@ -72,7 +72,7 @@ class ChessGame
     getPossibleMoves = (piece) => {
         // keeping track of black and white
         const directionality = piece.color == 'white' ? -1 : 1
-        const res = []
+        let res = []
         switch(piece.type)
         {
             case 'pawn':
@@ -116,8 +116,39 @@ class ChessGame
                         res.push(p)
                     }
                 }
-                console.log("RES IS: ", res)
                 return res
+            case 'bishop':
+                // function to "splay out" and find possible moves along vector (xSlie, ySlide)
+                const getDiagonals = (pos, xSlide, ySlide) => {
+                    const temp_res = []
+                    for(let i = 1; i < 8; i++)
+                    {
+                        if (this.board[piece.pos[0] + (i * xSlide)] == undefined)
+                        {
+                            break
+                        }
+                        if ((piece.pos[1] + (i * ySlide)) >= this.board.length)
+                        {
+                            break
+                        }
+                        let temp = this.board[piece.pos[0] + (i * xSlide)][piece.pos[1] + (i * ySlide)]
+                        if (temp == null || temp.color != piece.color)
+                        {
+                            temp_res.push([piece.pos[0] + (i * xSlide), piece.pos[1] + (i * ySlide)])
+                        }
+                        else
+                        {
+                            break
+                        }
+                    }
+                    return temp_res
+                }
+                res = res.concat(getDiagonals(piece.pos, 1, 1))
+                res = res.concat(getDiagonals(piece.pos, 1, -1))
+                res = res.concat(getDiagonals(piece.pos, -1, 1))
+                res = res.concat(getDiagonals(piece.pos, -1, -1))
+                return res
+                
         }
     }
 
