@@ -18,37 +18,7 @@ class ChessGame
         this.#initPieces()
     }
 
-    setHoveredSquare = (x, y) => this.hoveredSquare = [x, y]
-
-    resize = (canvas, boardWidth, boardHeight) => {
-        this.boardHeight = boardHeight
-        this.boardWidth = boardWidth
-        this.squareSize = boardHeight / 8
-        this.renderPieces(canvas)
-    }
-
-    onClickSquare = (x, y) => {
-        if(this.board[x][y] != null && this.board[x][y].color == this.perspective)
-        {
-            this.selectedSquare = [x, y]
-        }
-        else if (this.selectedSquare != null)
-        {
-            console.log("selected square")
-            console.log(this.selectedSquare)
-            const pieceToMove = this.board[this.selectedSquare[0]][this.selectedSquare[1]];
-            pieceToMove.pos = [x, y]
-            this.board[x][y] = pieceToMove;
-            this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
-            this.selectedSquare = null;
-        }
-    }
-
-    getGridLocation = (mouseX, mouseY) => {
-        const x = Math.floor(Math.min(mouseX, this.boardWidth) / this.squareSize)
-        const y = Math.floor(Math.min(mouseY, this.boardHeight) / this.squareSize)
-        return [x, y]
-    }
+    /* INITIALIZATION */
 
     #initImages = () => {
         const temp = ["pawn", "knight", "bishop", "king", "queen", "rook"];
@@ -115,6 +85,94 @@ class ChessGame
         this.board[3][0] = {color: 'black', type: 'queen', img: this.images['black-queen'], pos: [3, 0]};
         this.board[4][0] = {color: 'black', type: 'king', img: this.images['black-king'], pos: [4, 0]};
     }
+
+
+    /* UTILS */
+
+    // encoding the rules here
+    // TODO: verify a move won't lead to putting you in check
+    getPossibleMoves = (piece) => {
+        // keeping track of black and white
+        const directionality = piece.color == 'white' ? -1 : 1
+        const res = []
+        switch(piece.type)
+        {
+            case 'pawn':
+                const forwardOne = [piece.pos[0], piece.pos[1] + (1 * directionality)]
+                const forwardTwo = [piece.pos[0], piece.pos[1] + (2 * directionality)]
+                const diagonalLeft = [piece.pos[0] + (1 * directionality), piece.pos[1] + (1 * directionality)]
+                const diagonalRight = [piece.pos[0] - (1 * directionality), piece.pos[1] + (1 * directionality)]
+                if(this.board[forwardOne[0]][forwardOne[1]] == null)
+                {
+                    res.push(forwardOne);
+                    // checking to see if in the first file, for both black and white
+                    if(this.board[forwardTwo[0]][forwardTwo[1]] == null && piece.color == 'white' ? piece.pos[1] == 6 : piece.pos[1] == 1)
+                    {
+                        res.push(forwardTwo);
+                    }
+                }
+                [diagonalLeft, diagonalRight].forEach(move => {
+                    if(this.board[move[0]][move[1]] != null && this.board[move[0]][move[1]].color != piece.color)
+                    {
+                        res.push(move)
+                    }
+                })
+                return res
+            case 'knight':
+                break
+        }
+    }
+
+    setHoveredSquare = (x, y) => this.hoveredSquare = [x, y]
+
+    resize = (canvas, boardWidth, boardHeight) => {
+        this.boardHeight = boardHeight
+        this.boardWidth = boardWidth
+        this.squareSize = boardHeight / 8
+        this.renderPieces(canvas)
+    }
+
+    // TODO: come up with a better function for possible squares search (something in O(1))
+    onClickSquare = (x, y) => {
+        if(this.board[x][y] != null && this.board[x][y].color == this.perspective)
+        {
+            this.selectedSquare = [x, y]
+            this.possibleSquares = this.getPossibleMoves(this.board[x][y])
+        }
+        else if (this.selectedSquare != null)
+        {
+            if(this.possibleSquares != null)
+            {
+                for(let i = 0; i < this.possibleSquares.length; i++)
+                {
+                    if (this.possibleSquares[i][0] == x && this.possibleSquares[i][1] == y)
+                    {
+                        const pieceToMove = this.board[this.selectedSquare[0]][this.selectedSquare[1]];
+                        pieceToMove.pos = [x, y]
+                        this.board[x][y] = pieceToMove;
+                        this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
+                        this.selectedSquare = null;
+                        this.possibleSquares = null;
+                        return
+                    }
+                }
+            }
+            else
+            {
+                return
+            }
+        }
+    }
+
+    getGridLocation = (mouseX, mouseY) => {
+        const x = Math.floor(Math.min(mouseX, this.boardWidth) / this.squareSize)
+        const y = Math.floor(Math.min(mouseY, this.boardHeight) / this.squareSize)
+        return [x, y]
+    }
+
+
+    /* RENDERING */
+
     // consider making canvas constructor arg
     renderBoard = (canvas) => {
         const ctx = canvas.getContext("2d");
@@ -127,10 +185,6 @@ class ChessGame
             for(let j = 0; j < this.boardWidth; j += this.squareSize)
             {
                 ctx.fillStyle = flipper ? "rgb(234, 245, 230)" : "rgb(86, 145, 64)"
-                if(this.selectedSquare && i / this.squareSize == this.selectedSquare[0] && j / this.squareSize == this.selectedSquare[1])
-                {
-                    ctx.fillStyle = "rgb(215, 245, 66)"
-                }
                 flipper = !flipper
                 ctx.fillRect(i, j, this.boardWidth / 8, this.boardHeight / 8);
                 if(this.hoveredSquare && i / this.squareSize == this.hoveredSquare[0] && j / this.squareSize == this.hoveredSquare[1])
@@ -139,21 +193,28 @@ class ChessGame
                     ctx.strokeRect(i, j,  this.boardWidth / 8, this.boardHeight / 8)
                     ctx.strokeStyle = null;
                 }
+
+                if(this.selectedSquare && i / this.squareSize == this.selectedSquare[0] && j / this.squareSize == this.selectedSquare[1])
+                {
+                    ctx.fillStyle = "rgb(215, 245, 66, 0.7)"
+                    ctx.fillRect(i, j, this.boardWidth / 8, this.boardHeight / 8);
+                }
+                if (this.possibleSquares != null)
+                {
+                    this.possibleSquares.forEach(c => {
+                        if (c[0] === i / this.squareSize  && c[1] === j / this.squareSize)
+                        {
+                            ctx.beginPath();
+                            ctx.arc(i + this.squareSize / 2, j + this.squareSize / 2, this.squareSize / 5, 0, 2 * Math.PI);
+                            ctx.fillStyle = "rgba(32, 45, 21, 0.8)";
+                            ctx.fill();
+                        }
+                    })
+                }
             }
         }
     }
     renderPieces = (canvas) => {
-        const ctx = canvas.getContext("2d");
-        const isWhite = this.perspective == "white"
-        this.blackPieces.forEach(piece => {
-            ctx.drawImage(piece.img, (isWhite ? piece.pos[0] : (-piece.pos[0] + 7)) * this.squareSize, (isWhite ? piece.pos[1] : (-piece.pos[1] + 7)) * this.squareSize, this.squareSize, this.squareSize)
-        })
-        this.whitePieces.forEach(piece => {
-            ctx.drawImage(piece.img,(isWhite ? piece.pos[0] : (-piece.pos[0] + 7)) * this.squareSize, (isWhite ? piece.pos[1] : (-piece.pos[1] + 7)) * this.squareSize, this.squareSize, this.squareSize)
-        })
-    }
-    renderGame = (canvas) => {
-        this.renderBoard(canvas)
         const ctx = canvas.getContext("2d");
         const isWhite = this.perspective == "white"
         this.board.forEach(row => {
@@ -165,5 +226,10 @@ class ChessGame
                 }
             })
         })
+    }
+
+    renderGame = (canvas) => {
+        this.renderBoard(canvas);
+        this.renderPieces(canvas);
     }
 }
