@@ -42,30 +42,7 @@ class ChessGame
         {
             this.board[i][6] = {color: 'white', type: 'pawn', img: this.images['white-pawn'], pos: [i, 6]}
             this.board[i][1] = {color: 'black', type: 'pawn', img: this.images['black-pawn'], pos: [i, 1]}
-            //this.whitePieces.push({color: 'white', type: 'pawn', img: this.images['white-pawn'], pos: [i, 6]});
-            //this.blackPieces.push({color: 'black', type: 'pawn', img: this.images['black-pawn'], pos: [i, 1]});
         }
-        /*
-        this.whitePieces.push({color: 'white', type: 'rook', img: this.images['white-rook'], pos: [0, 7]});
-        this.whitePieces.push({color: 'white', type: 'rook', img: this.images['white-rook'], pos: [7, 7]});
-        this.whitePieces.push({color: 'white', type: 'knight', img: this.images['white-knight'], pos: [1, 7]});
-        this.whitePieces.push({color: 'white', type: 'knight', img: this.images['white-knight'], pos: [6, 7]});
-        this.whitePieces.push({color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: [2, 7]});
-        this.whitePieces.push({color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: [5, 7]});   
-        this.whitePieces.push({color: 'white', type: 'queen', img: this.images['white-queen'], pos: [3, 7]});   
-        this.whitePieces.push({color: 'white', type: 'king', img: this.images['white-king'], pos: [4, 7]});   
-        */
-
-	    /*
-        this.blackPieces.push({color: 'black', type: 'rook', img: this.images['black-rook'], pos: [0, 0]});
-        this.blackPieces.push({color: 'black', type: 'rook', img: this.images['black-rook'], pos: [7, 0]});
-        this.blackPieces.push({color: 'black', type: 'knight', img: this.images['black-knight'], pos: [1, 0]});
-        this.blackPieces.push({color: 'black', type: 'knight', img: this.images['black-knight'], pos: [6, 0]});
-        this.blackPieces.push({color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: [2, 0]});
-        this.blackPieces.push({color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: [5, 0]}); 
-        this.blackPieces.push({color: 'black', type: 'queen', img: this.images['black-queen'], pos: [3, 0]});   
-        this.blackPieces.push({color: 'black', type: 'king', img: this.images['black-king'], pos: [4, 0]}); 
-	    */
 
         this.board[0][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: [0, 7]}
         this.board[7][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: [7, 7]}
@@ -91,6 +68,7 @@ class ChessGame
 
     // encoding the rules here
     // TODO: verify a move won't lead to putting you in check
+    // TODO: probably do a better job of checking array out of bounds
     getPossibleMoves = (piece) => {
         // keeping track of black and white
         const directionality = piece.color == 'white' ? -1 : 1
@@ -102,7 +80,7 @@ class ChessGame
                 const forwardTwo = [piece.pos[0], piece.pos[1] + (2 * directionality)]
                 const diagonalLeft = [piece.pos[0] + (1 * directionality), piece.pos[1] + (1 * directionality)]
                 const diagonalRight = [piece.pos[0] - (1 * directionality), piece.pos[1] + (1 * directionality)]
-                if(this.board[forwardOne[0]][forwardOne[1]] == null)
+                if(this.board[forwardOne[0]] && this.board[forwardOne[0]][forwardOne[1]] == null)
                 {
                     res.push(forwardOne);
                     // checking to see if in the first file, for both black and white
@@ -112,14 +90,34 @@ class ChessGame
                     }
                 }
                 [diagonalLeft, diagonalRight].forEach(move => {
-                    if(this.board[move[0]][move[1]] != null && this.board[move[0]][move[1]].color != piece.color)
+                    if(this.board[move[0]] && this.board[move[0]][move[1]] != null && this.board[move[0]][move[1]].color != piece.color)
                     {
                         res.push(move)
                     }
                 })
                 return res
             case 'knight':
-                break
+                console.log("here dawg")
+                const possible = []
+                const ones = [1, -1]
+                const twos = [2, -2]
+                for(let i = 0; i < ones.length; i++)
+                {
+                    for(let j = 0; j < twos.length; j++)
+                    {
+                        possible.push([piece.pos[0] + ones[i], piece.pos[1] + twos[j]])
+                        possible.push([piece.pos[0] + twos[j], piece.pos[1] + ones[i]])
+                    }
+                }
+                for(const p of possible)
+                {
+                    if (this.board[p[0]] && (this.board[p[0]][p[1]] == null || this.board[p[0]][p[1]].color != piece.color))
+                    {
+                        res.push(p)
+                    }
+                }
+                console.log("RES IS: ", res)
+                return res
         }
     }
 
