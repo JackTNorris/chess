@@ -86,9 +86,14 @@ class ChessGame
                     break
                 }
                 let temp = this.board[piece.pos[0] + (i * xSlide)][piece.pos[1] + (i * ySlide)]
-                if (temp == null || temp.color != piece.color)
+                if (temp == null)
                 {
                     temp_res.push([piece.pos[0] + (i * xSlide), piece.pos[1] + (i * ySlide)])
+                }
+                else if (temp.color != piece.color)
+                {
+                    temp_res.push([piece.pos[0] + (i * xSlide), piece.pos[1] + (i * ySlide)])
+                    break
                 }
                 else
                 {
@@ -172,14 +177,29 @@ class ChessGame
 
     // TODO: come up with a better function for possible squares search (something in O(1))
     onClickSquare = (x, y) => {
-        if(this.board[x][y] != null && this.board[x][y].color == this.perspective)
+        const isWhite = this.perspective == 'white';
+        let temp_x = 0;
+        let temp_y = 0;
+        if (this.perspective == 'black')
         {
+            temp_x = 7 - x
+            temp_y = 7 - y
+        }
+        if(isWhite && this.board[x][y] != null && this.board[x][y].color == this.perspective)
+        {
+            console.log("bro")
+            this.selectedSquare = [x, y]
+            this.possibleSquares = this.getPossibleMoves(this.board[x][y])
+        }
+        if(!isWhite && this.board[temp_x][temp_y] != null && this.board[temp_x][temp_y].color == this.perspective)
+        {
+            console.log("bro")
             this.selectedSquare = [x, y]
             this.possibleSquares = this.getPossibleMoves(this.board[x][y])
         }
         else if (this.selectedSquare != null)
         {
-            if(this.possibleSquares != null)
+            if(isWhite && this.possibleSquares != null)
             {
                 for(let i = 0; i < this.possibleSquares.length; i++)
                 {
@@ -189,6 +209,22 @@ class ChessGame
                         pieceToMove.pos = [x, y]
                         this.board[x][y] = pieceToMove;
                         this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
+                        this.selectedSquare = null;
+                        this.possibleSquares = null;
+                        return
+                    }
+                }
+            }
+            if(!isWhite && this.possibleSquares != null)
+            {
+                for(let i = 0; i < this.possibleSquares.length; i++)
+                {
+                    if (this.possibleSquares[i][0] == x && this.possibleSquares[i][1] == y)
+                    {
+                        const pieceToMove = this.board[7 - this.selectedSquare[0]][7 - this.selectedSquare[1]];
+                        pieceToMove.pos = [temp_x, temp_y]
+                        this.board[temp_x][temp_y] = pieceToMove;
+                        this.board[7 - this.selectedSquare[0]][7 - this.selectedSquare[1]] = null;
                         this.selectedSquare = null;
                         this.possibleSquares = null;
                         return
