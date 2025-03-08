@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+    <head>
+        <title>Chess</title>
+        <link rel="icon" href="./assets/chess-icon.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="Jack Norris" />
+        <script>
+            const drawBoard = (canvas) => {
+                const ctx = canvas.getContext("2d");
+                let flipper = false
+                for(let i = 0; i < 800; i += 100)
+                {
+                    // for checkered pattern
+                    flipper = !flipper
+                    for(let j = 0; j < 800; j += 100)
+                    {
+                        ctx.fillStyle = flipper ? "white" : "black"
+                        console.log(ctx.fillStyle)
+                        flipper = !flipper
+                        ctx.fillRect(i, j, 100, 100);
+                    }
+                }
+                
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const board = document.getElementById('board')
+                if (board != null)
+                {
+                    console.log("shit")
+                    board.height = board.width
+                    drawBoard(board)
+                }            
+            });
+
+        </script>
+    </head>
+    <body style="display: flex; flex-direction: row; justify-content: center;">
+        <canvas height="800" width="800" id="board" style="width: 50%; height: auto; aspect-ratio: square; border-style: solid; border-color: black;">
+
+        </canvas>
+    </body>
+</html>
