@@ -4,25 +4,35 @@
         <link rel="icon" href="./assets/chess-icon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="author" content="Jack Norris" />
+        <style>
+            #board:hover {
+                cursor: pointer;
+            }
+        </style>
         <script src="chess.js"></script>
         <script>
-            const chessGame = new ChessGame(800, 800, 'white')
+            const chessGame = new ChessGame(500, 500, 'white')
             document.addEventListener('DOMContentLoaded', function() {
                 const board = document.getElementById('board')
                 if (board != null)
                 {
-                    board.height = board.width
-                    chessGame.drawBoard(board)
                     setTimeout(() => {
-                        chessGame.renderPieces(board)
+                        chessGame.renderBoard(board)
                     }, 1000)
+                    board.addEventListener('click', (e) => {
+                        const x = e.offsetX;
+                        const y = e.offsetY;
+                        const square = chessGame.getClickedSquare(x, y)
+                        chessGame.onClickSquare(square[0], square[1], board)
+                        chessGame.renderBoard(board)
+                    });
                 }            
             });
 
         </script>
     </head>
     <body style="display: flex; flex-direction: row; justify-content: center; height: 100vh; align-items: center;">
-        <canvas height="800" width="800" id="board" style="width: 40%; height: auto; aspect-ratio: square; border-style: solid; border-color: black;">
+        <canvas height="500" width="500" id="board" style="aspect-ratio: square; border-style: solid; border-color: black;">
 
         </canvas>
     </body>
