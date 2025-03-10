@@ -16,6 +16,7 @@ class ChessGame
         console.log(this.board)
         this.#initImages()
         this.#initPieces()
+        this.#flipBoard()
     }
 
 
@@ -67,16 +68,31 @@ class ChessGame
 
     /* UTILS */
 
-    #rotate180 = (matrix) => {
-        return matrix.map(row => [...row].reverse()).reverse();
-    }
+    #flipBoard = () => {
+        let newBoard = Array(8).fill(null).map(() => Array(8).fill(null));
+    
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                if (this.board[x][y]) {
+                    let newX = 7 - x;
+                    let newY = 7 - y;
+                    newBoard[newX][newY] = { 
+                        ...this.board[x][y], 
+                        pos: [newX, newY] 
+                    };
+                }
+            }
+        }
+    
+        this.board = newBoard;
+    };
 
     // encoding the rules here
     // TODO: verify a move won't lead to putting you in check
     // TODO: probably do a better job of checking array out of bounds
     getPossibleMoves = (piece) => {
         // keeping track of black and white
-        const directionality = piece.color == 'white' ? -1 : 1
+        const directionality = -1
         let res = []
         const getAdjacent = (pos, xSlide, ySlide) => {
             const temp_res = []
@@ -118,7 +134,7 @@ class ChessGame
                 {
                     res.push(forwardOne);
                     // checking to see if in the first file, for both black and white
-                    if(this.board[forwardTwo[0]][forwardTwo[1]] == null && piece.color == 'white' ? piece.pos[1] == 6 : piece.pos[1] == 1)
+                    if(this.board[forwardTwo[0]][forwardTwo[1]] == null && piece.pos[1] == 6)
                     {
                         res.push(forwardTwo);
                     }
@@ -188,10 +204,13 @@ class ChessGame
             this.selectedSquare = [x, y]
             this.possibleSquares = this.getPossibleMoves(this.board[x][y])
         }
+        // clicked another square after selecting piece
         else if (this.selectedSquare != null)
         {
+            // possible moves to make is not null
             if(this.possibleSquares != null)
             {
+                // set piece position to where we at
                 for(let i = 0; i < this.possibleSquares.length; i++)
                 {
                     if (this.possibleSquares[i][0] == x && this.possibleSquares[i][1] == y)
@@ -202,6 +221,8 @@ class ChessGame
                         this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
                         this.selectedSquare = null;
                         this.possibleSquares = null;
+                        this.perspective = this.perspective == 'white' ? 'black' : 'white'
+                        this.#flipBoard()
                         return
                     }
                 }
