@@ -16,7 +16,10 @@ class ChessGame
         console.log(this.board)
         this.#initImages()
         this.#initPieces()
-        this.#flipBoard()
+        if (this.perspective == 'white')
+        {
+            this.#flipBoard()
+        }
     }
 
 
