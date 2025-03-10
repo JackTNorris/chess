@@ -97,9 +97,9 @@ class ChessGame
         // keeping track of black and white
         const directionality = -1
         let res = []
-        const getAdjacent = (pos, xSlide, ySlide) => {
+        const getAdjacent = (pos, xSlide, ySlide, limit = 7) => {
             const temp_res = []
-            for(let i = 1; i < 8; i++)
+            for(let i = 1; i <= limit; i++)
             {
                 if (this.board[piece.pos[0] + (i * xSlide)] == undefined)
                 {
@@ -186,6 +186,16 @@ class ChessGame
             case 'queen':
                 res = this.getPossibleMoves({...piece, type: 'rook'})
                 res = res.concat(this.getPossibleMoves({...piece, type: 'bishop'}))
+                return res
+            case 'king':
+                res = res.concat(getAdjacent(piece.pos, 1, 0, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, 0, 1))
+                res = res.concat(getAdjacent(piece.pos, 0, 1, 1))
+                res = res.concat(getAdjacent(piece.pos, 0, -1, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, -1, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, 1, 1))
+                res = res.concat(getAdjacent(piece.pos, 1, 1, 1))
+                res = res.concat(getAdjacent(piece.pos, 1, -1, 1))
                 return res
         }
     }
