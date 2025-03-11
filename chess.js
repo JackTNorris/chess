@@ -40,32 +40,56 @@ class ChessGame
         }
     }
 
+    #mapCoordinates = (chessCoord) => {
+        const file = chessCoord[0].toUpperCase();
+        const rank = parseInt(chessCoord[1], 10) - 1;
+        const x = file.charCodeAt(0) - 'A'.charCodeAt(0);
+        const y = rank;
+
+        if (this.perspective === 'white') {
+            return [x, 7 - y];
+        } else {
+            return [7 - x, y];
+        }
+    }
+
+    #mapGridToChess = (gridCoord) => {
+        const [x, y] = gridCoord;
+        const file = String.fromCharCode('A'.charCodeAt(0) + x);
+        const rank = 8 - y;
+
+        if (this.perspective === 'white') {
+            return `${file}${rank}`;
+        } else {
+            return `${String.fromCharCode('A'.charCodeAt(0) + (7 - x))}${y + 1}`;
+        }
+    }
 
     // optimize this
     #initPieces = () => {
+        const positions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
         for(let i = 0; i < 8; i ++)
         {
-            this.board[i][6] = {color: 'white', type: 'pawn', img: this.images['white-pawn'], pos: [i, 6]}
-            this.board[i][1] = {color: 'black', type: 'pawn', img: this.images['black-pawn'], pos: [i, 1]}
+            this.board[i][6] = {color: 'white', type: 'pawn', img: this.images['white-pawn'], pos: `${positions[i]}2`}
+            this.board[i][1] = {color: 'black', type: 'pawn', img: this.images['black-pawn'], pos: `${positions[i]}7`}
         }
+        this.board[0][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: `${positions[0]}1`}
+        this.board[7][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: `${positions[7]}1`}
+        this.board[1][7] = {color: 'white', type: 'knight', img: this.images['white-knight'], pos: `${positions[1]}1`}
+        this.board[6][7] = {color: 'white', type: 'knight', img: this.images['white-knight'], pos: `${positions[6]}1`}
+        this.board[2][7] = {color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: `${positions[2]}1`}
+        this.board[5][7] = {color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: `${positions[5]}1`}
+        this.board[3][7] = {color: 'white', type: 'queen', img: this.images['white-queen'], pos: `${positions[3]}1`}
+        this.board[4][7] = {color: 'white', type: 'king', img: this.images['white-king'], pos: `${positions[4]}1`}
 
-        this.board[0][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: [0, 7]}
-        this.board[7][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: [7, 7]}
-        this.board[1][7] = {color: 'white', type: 'knight', img: this.images['white-knight'], pos: [1, 7]}
-        this.board[6][7] = {color: 'white', type: 'knight', img: this.images['white-knight'], pos: [6, 7]}
-        this.board[2][7] = {color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: [2, 7]}
-        this.board[5][7] = {color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: [5, 7]}
-        this.board[3][7] = {color: 'white', type: 'queen', img: this.images['white-queen'], pos: [3, 7]}
-        this.board[4][7] = {color: 'white', type: 'king', img: this.images['white-king'], pos: [4, 7]}
-
-        this.board[0][0] = {color: 'black', type: 'rook', img: this.images['black-rook'], pos: [0, 0]};
-        this.board[7][0] = {color: 'black', type: 'rook', img: this.images['black-rook'], pos: [7, 0]};
-        this.board[1][0] = {color: 'black', type: 'knight', img: this.images['black-knight'], pos: [1, 0]};
-        this.board[6][0] = {color: 'black', type: 'knight', img: this.images['black-knight'], pos: [6, 0]};
-        this.board[2][0] = {color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: [2, 0]};
-        this.board[5][0] = {color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: [5, 0]};
-        this.board[3][0] = {color: 'black', type: 'queen', img: this.images['black-queen'], pos: [3, 0]};
-        this.board[4][0] = {color: 'black', type: 'king', img: this.images['black-king'], pos: [4, 0]};
+        this.board[0][0] = {color: 'black', type: 'rook', img: this.images['black-rook'], pos: `${positions[0]}8`};
+        this.board[7][0] = {color: 'black', type: 'rook', img: this.images['black-rook'], pos: `${positions[7]}8`};
+        this.board[1][0] = {color: 'black', type: 'knight', img: this.images['black-knight'], pos: `${positions[1]}8`};
+        this.board[6][0] = {color: 'black', type: 'knight', img: this.images['black-knight'], pos: `${positions[6]}8`};
+        this.board[2][0] = {color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: `${positions[2]}8`};
+        this.board[5][0] = {color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: `${positions[5]}8`};
+        this.board[3][0] = {color: 'black', type: 'queen', img: this.images['black-queen'], pos: `${positions[3]}8`};
+        this.board[4][0] = {color: 'black', type: 'king', img: this.images['black-king'], pos: `${positions[4]}8`};
     }
 
 
@@ -81,7 +105,6 @@ class ChessGame
                     let newY = 7 - y;
                     newBoard[newX][newY] = { 
                         ...this.board[x][y], 
-                        pos: [newX, newY] 
                     };
                 }
             }
@@ -95,6 +118,7 @@ class ChessGame
     // TODO: probably do a better job of checking array out of bounds
     getPossibleMoves = (piece) => {
         // keeping track of black and white
+        piece = {...piece, pos: this.#mapCoordinates(piece.pos)}
         const directionality = -1
         let res = []
         const getAdjacent = (pos, xSlide, ySlide, limit = 7) => {
@@ -184,8 +208,14 @@ class ChessGame
                 res = res.concat(getAdjacent(piece.pos, 0, -1))
                 return res
             case 'queen':
-                res = this.getPossibleMoves({...piece, type: 'rook'})
-                res = res.concat(this.getPossibleMoves({...piece, type: 'bishop'}))
+                res = res.concat(getAdjacent(piece.pos, 1, 0))
+                res = res.concat(getAdjacent(piece.pos, 0, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, 0))
+                res = res.concat(getAdjacent(piece.pos, 0, -1))
+                res = res.concat(getAdjacent(piece.pos, 1, 1))
+                res = res.concat(getAdjacent(piece.pos, 1, -1))
+                res = res.concat(getAdjacent(piece.pos, -1, 1))
+                res = res.concat(getAdjacent(piece.pos, -1, -1))
                 return res
             case 'king':
                 res = res.concat(getAdjacent(piece.pos, 1, 0, 1))
@@ -213,7 +243,6 @@ class ChessGame
     onClickSquare = (x, y) => {
         if(this.board[x][y] != null && this.board[x][y].color == this.perspective)
         {
-            console.log("bro")
             this.selectedSquare = [x, y]
             this.possibleSquares = this.getPossibleMoves(this.board[x][y])
         }
@@ -223,17 +252,20 @@ class ChessGame
             // possible moves to make is not null
             if(this.possibleSquares != null)
             {
-                // set piece position to where we at
+                // see if selected square in possible squares
                 for(let i = 0; i < this.possibleSquares.length; i++)
                 {
+                    // if it is, move the piece
                     if (this.possibleSquares[i][0] == x && this.possibleSquares[i][1] == y)
                     {
+                        console.log("moved to ", this.#mapGridToChess([x, y]))
                         const pieceToMove = this.board[this.selectedSquare[0]][this.selectedSquare[1]];
-                        pieceToMove.pos = [x, y]
+                        pieceToMove.pos = this.#mapGridToChess([x, y])
                         this.board[x][y] = pieceToMove;
                         this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
                         this.selectedSquare = null;
                         this.possibleSquares = null;
+                        // change perspective and flip board
                         this.perspective = this.perspective == 'white' ? 'black' : 'white'
                         this.#flipBoard()
                         return
@@ -303,7 +335,7 @@ class ChessGame
             row.forEach(block => {
                 if( block != null)
                 {
-                    const piece = block
+                    const piece = {...block, pos: this.#mapCoordinates(block.pos)}
                     ctx.drawImage(piece.img, piece.pos[0] * this.squareSize,  piece.pos[1] * this.squareSize, this.squareSize, this.squareSize)
                 }
             })
