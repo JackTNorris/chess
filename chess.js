@@ -116,6 +116,7 @@ class ChessGame
     // encoding the rules here
     // TODO: verify a move won't lead to putting you in check
     // TODO: probably do a better job of checking array out of bounds
+    // TODO: fix weird directionality flag
     getPossibleMoves = (piece) => {
         // keeping track of black and white
         piece = {...piece, pos: this.#mapCoordinates(piece.pos)}
