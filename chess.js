@@ -73,23 +73,23 @@ class ChessGame
             this.board[i][6] = {color: 'white', type: 'pawn', img: this.images['white-pawn'], pos: `${positions[i]}2`}
             this.board[i][1] = {color: 'black', type: 'pawn', img: this.images['black-pawn'], pos: `${positions[i]}7`}
         }
-        this.board[0][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: `${positions[0]}1`}
-        this.board[7][7] = {color: 'white', type: 'rook', img: this.images['white-rook'], pos: `${positions[7]}1`}
-        this.board[1][7] = {color: 'white', type: 'knight', img: this.images['white-knight'], pos: `${positions[1]}1`}
-        this.board[6][7] = {color: 'white', type: 'knight', img: this.images['white-knight'], pos: `${positions[6]}1`}
-        this.board[2][7] = {color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: `${positions[2]}1`}
-        this.board[5][7] = {color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: `${positions[5]}1`}
-        this.board[3][7] = {color: 'white', type: 'queen', img: this.images['white-queen'], pos: `${positions[3]}1`}
-        this.board[4][7] = {color: 'white', type: 'king', img: this.images['white-king'], pos: `${positions[4]}1`}
+        this.board[0][7] = {hasMoved: false, color: 'white', type: 'rook', img: this.images['white-rook'], pos: `${positions[0]}1`}
+        this.board[7][7] = {hasMoved: false, color: 'white', type: 'rook', img: this.images['white-rook'], pos: `${positions[7]}1`}
+        this.board[1][7] = {hasMoved: false, color: 'white', type: 'knight', img: this.images['white-knight'], pos: `${positions[1]}1`}
+        this.board[6][7] = {hasMoved: false, color: 'white', type: 'knight', img: this.images['white-knight'], pos: `${positions[6]}1`}
+        this.board[2][7] = {hasMoved: false, color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: `${positions[2]}1`}
+        this.board[5][7] = {hasMoved: false, color: 'white', type: 'bishop', img: this.images['white-bishop'], pos: `${positions[5]}1`}
+        this.board[3][7] = {hasMoved: false, color: 'white', type: 'queen', img: this.images['white-queen'], pos: `${positions[3]}1`}
+        this.board[4][7] = {hasMoved: false, color: 'white', type: 'king', img: this.images['white-king'], pos: `${positions[4]}1`}
 
-        this.board[0][0] = {color: 'black', type: 'rook', img: this.images['black-rook'], pos: `${positions[0]}8`};
-        this.board[7][0] = {color: 'black', type: 'rook', img: this.images['black-rook'], pos: `${positions[7]}8`};
-        this.board[1][0] = {color: 'black', type: 'knight', img: this.images['black-knight'], pos: `${positions[1]}8`};
-        this.board[6][0] = {color: 'black', type: 'knight', img: this.images['black-knight'], pos: `${positions[6]}8`};
-        this.board[2][0] = {color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: `${positions[2]}8`};
-        this.board[5][0] = {color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: `${positions[5]}8`};
-        this.board[3][0] = {color: 'black', type: 'queen', img: this.images['black-queen'], pos: `${positions[3]}8`};
-        this.board[4][0] = {color: 'black', type: 'king', img: this.images['black-king'], pos: `${positions[4]}8`};
+        this.board[0][0] = {hasMoved: false, color: 'black', type: 'rook', img: this.images['black-rook'], pos: `${positions[0]}8`};
+        this.board[7][0] = {hasMoved: false, color: 'black', type: 'rook', img: this.images['black-rook'], pos: `${positions[7]}8`};
+        this.board[1][0] = {hasMoved: false, color: 'black', type: 'knight', img: this.images['black-knight'], pos: `${positions[1]}8`};
+        this.board[6][0] = {hasMoved: false, color: 'black', type: 'knight', img: this.images['black-knight'], pos: `${positions[6]}8`};
+        this.board[2][0] = {hasMoved: false, color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: `${positions[2]}8`};
+        this.board[5][0] = {hasMoved: false, color: 'black', type: 'bishop', img: this.images['black-bishop'], pos: `${positions[5]}8`};
+        this.board[3][0] = {hasMoved: false, color: 'black', type: 'queen', img: this.images['black-queen'], pos: `${positions[3]}8`};
+        this.board[4][0] = {hasMoved: false, color: 'black', type: 'king', img: this.images['black-king'], pos: `${positions[4]}8`};
     }
 
 
@@ -119,6 +119,8 @@ class ChessGame
     // TODO: fix weird directionality flag
     getPossibleMoves = (piece) => {
         // keeping track of black and white
+        const chessCoord = piece.pos
+        // got lazy and didn't want to change logic
         piece = {...piece, pos: this.#mapCoordinates(piece.pos)}
         const directionality = -1
         let res = []
@@ -227,6 +229,10 @@ class ChessGame
                 res = res.concat(getAdjacent(piece.pos, -1, 1, 1))
                 res = res.concat(getAdjacent(piece.pos, 1, 1, 1))
                 res = res.concat(getAdjacent(piece.pos, 1, -1, 1))
+                if (this.perspective == 'white' && chessCoord == 'A5')
+                {
+
+                }
                 return res
         }
     }
@@ -262,6 +268,7 @@ class ChessGame
                         console.log("moved to ", this.#mapGridToChess([x, y]))
                         const pieceToMove = this.board[this.selectedSquare[0]][this.selectedSquare[1]];
                         pieceToMove.pos = this.#mapGridToChess([x, y])
+                        pieceToMove.hasMoved = true
                         this.board[x][y] = pieceToMove;
                         this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
                         this.selectedSquare = null;
