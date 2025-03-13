@@ -18,7 +18,7 @@ class ChessGame
         this.#initPieces()
         if (this.perspective == 'black')
         {
-            this.#flipBoard()
+            // this.#flipBoard()
         }
     }
 
@@ -124,6 +124,9 @@ class ChessGame
         piece = {...piece, pos: this.#mapCoordinates(piece.pos)}
         const directionality = -1
         let res = []
+
+        // "projecting" in the direction of the passed vector (xSlide, ySlide)
+        // in order from start of ray to end of ray
         const getAdjacent = (pos, xSlide, ySlide, limit = 7) => {
             const temp_res = []
             for(let i = 1; i <= limit; i++)
@@ -177,7 +180,6 @@ class ChessGame
                 })
                 return res
             case 'knight':
-                console.log("here dawg")
                 const possible = []
                 const ones = [1, -1]
                 const twos = [2, -2]
@@ -229,9 +231,30 @@ class ChessGame
                 res = res.concat(getAdjacent(piece.pos, -1, 1, 1))
                 res = res.concat(getAdjacent(piece.pos, 1, 1, 1))
                 res = res.concat(getAdjacent(piece.pos, 1, -1, 1))
-                if (this.perspective == 'white' && chessCoord == 'A5')
+                if (this.perspective == 'white' && chessCoord == 'E1')
                 {
+                    if (this.board[7][7].type == 'rook' && this.board[7][7].hasMoved == false)
+                    {
+                        let rightLaneProjection = getAdjacent(piece.pos, 1, 0)
+                        let leftLaneProjection = getAdjacent(piece.pos, -1, 0)
+                        if (rightLaneProjection.length > 0)
+                        {
+                            let temp = rightLaneProjection[rightLaneProjection.length - 1]
+                            if( temp[0] == 6 && temp[1] == 7)
+                            {
+                                res.push([6, 7])
+                            }
+                        }
+                        if (leftLaneProjection.length > 0)
+                        {
+                            let temp = leftLaneProjection[leftLaneProjection.length - 1]
+                            if( temp[0] == 1 && temp[1] == 7)
+                            {
+                                res.push([2, 7])
+                            }
+                        }
 
+                    }
                 }
                 return res
         }
@@ -274,8 +297,8 @@ class ChessGame
                         this.selectedSquare = null;
                         this.possibleSquares = null;
                         // change perspective and flip board
-                        this.perspective = this.perspective == 'white' ? 'black' : 'white'
-                        this.#flipBoard()
+                        // this.perspective = this.perspective == 'white' ? 'black' : 'white'
+                        // this.#flipBoard()
                         return
                     }
                 }
@@ -337,6 +360,7 @@ class ChessGame
             }
         }
     }
+
     renderPieces = (canvas) => {
         const ctx = canvas.getContext("2d");
         this.board.forEach(row => {
