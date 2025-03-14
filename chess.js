@@ -18,7 +18,7 @@ class ChessGame
         this.#initPieces()
         if (this.perspective == 'black')
         {
-            // this.#flipBoard()
+            this.#flipBoard()
         }
     }
 
@@ -231,18 +231,20 @@ class ChessGame
                 res = res.concat(getAdjacent(piece.pos, -1, 1, 1))
                 res = res.concat(getAdjacent(piece.pos, 1, 1, 1))
                 res = res.concat(getAdjacent(piece.pos, 1, -1, 1))
-                if (this.perspective == 'white' && chessCoord == 'E1')
+
+                // TODO: fix this
+                if ((this.perspective == 'white' && chessCoord == 'E1') || (this.perspective == 'black' && chessCoord == "E8"))
                 {
-                    if (this.board[7][7].type == 'rook' && this.board[7][7].hasMoved == false)
+                    if ((this.board[7][7] && this.board[7][7].type == 'rook' && this.board[7][7].hasMoved == false) || ( this.board[0][7] && this.board[0][7].type == 'rook' && this.board[0][7].hasMoved == false))
                     {
                         let rightLaneProjection = getAdjacent(piece.pos, 1, 0)
                         let leftLaneProjection = getAdjacent(piece.pos, -1, 0)
                         if (rightLaneProjection.length > 0)
                         {
                             let temp = rightLaneProjection[rightLaneProjection.length - 1]
-                            if( temp[0] == 6 && temp[1] == 7)
+                            if( (temp[0] == 6 && temp[1] == 7))
                             {
-                                res.push([6, 7])
+                                res.push(this.perspective == 'black' ? [5, 7]: [6, 7])
                             }
                         }
                         if (leftLaneProjection.length > 0)
@@ -250,10 +252,9 @@ class ChessGame
                             let temp = leftLaneProjection[leftLaneProjection.length - 1]
                             if( temp[0] == 1 && temp[1] == 7)
                             {
-                                res.push([2, 7])
+                                res.push(this.perspective == 'black' ? [1, 7] : [2, 7])
                             }
                         }
-
                     }
                 }
                 return res
@@ -293,6 +294,29 @@ class ChessGame
                         pieceToMove.pos = this.#mapGridToChess([x, y])
                         pieceToMove.hasMoved = true
                         this.board[x][y] = pieceToMove;
+                        
+                        // detecting castle-ing
+                        if(pieceToMove.type == 'king')
+                        {
+                            if (Math.abs(this.selectedSquare[0] - x) == 2)
+                            {
+                                if(this.selectedSquare[0] - x < 0)
+                                {
+                                    this.board[x - 1][y] = this.board[7][7]
+                                    this.board[x - 1][y].hasMoved = true
+                                    this.board[x - 1][y].pos = this.#mapGridToChess([x - 1, y])
+                                    this.board[7][7] = null
+                                }
+                                else
+                                {
+                                    this.board[x+1][y] = this.board[0][7]
+                                    this.board[x - 1][y].hasMoved = true
+                                    this.board[x + 1][y].pos = this.#mapGridToChess([x + 1, y])
+                                    this.board[0][7] = null
+                                }
+                            }
+                        }
+
                         this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
                         this.selectedSquare = null;
                         this.possibleSquares = null;
