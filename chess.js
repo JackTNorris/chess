@@ -54,10 +54,31 @@ class ChessGame
         }
     }
 
+    #getAlgebraicPieceVariable = (piece) => {
+        let variable = ""
+        switch (piece.type)
+        {
+            case 'bishop':
+                break;
+            case 'pawn':
+                break;
+            case 'king':
+                break;
+            case 'queen':
+                break;
+            case 'rook':
+                break;
+            case 'knight':
+                break;
+        }
+    }
+
     #logMove = (piece, oldPos, captured = null) => {
+        let algebraicNotation = ""
         if (captured)
         {
-            
+            algebraicNotation += "x"
+
         }
     }
 
@@ -133,6 +154,7 @@ class ChessGame
         const directionality = -1
         let res = []
 
+        // TODO: rename this ass function
         // "projecting" in the direction of the passed vector (xSlide, ySlide)
         // in order from start of ray to end of ray
         const getAdjacent = (pos, xSlide, ySlide, limit = 7) => {
@@ -243,10 +265,10 @@ class ChessGame
                 // TODO: fix this
                 if ((this.perspective == 'white' && chessCoord == 'E1') || (this.perspective == 'black' && chessCoord == "E8"))
                 {
-                    if ((this.board[7][7] && this.board[7][7].type == 'rook' && this.board[7][7].hasMoved == false) || ( this.board[0][7] && this.board[0][7].type == 'rook' && this.board[0][7].hasMoved == false))
-                    {
-                        let rightLaneProjection = getAdjacent(piece.pos, 1, 0)
-                        let leftLaneProjection = getAdjacent(piece.pos, -1, 0)
+                        let rightLaneProjection = (this.board[7][7] && this.board[7][7].type == 'rook' && this.board[7][7].hasMoved == false) ? getAdjacent(piece.pos, 1, 0) : [];
+    
+                        let leftLaneProjection = (this.board[0][7] && this.board[0][7].type == 'rook' && this.board[0][7].hasMoved == false) ? getAdjacent(piece.pos, -1, 0) : [];
+    
                         if (rightLaneProjection.length > 0)
                         {
                             let temp = rightLaneProjection[rightLaneProjection.length - 1]
@@ -263,7 +285,6 @@ class ChessGame
                                 res.push(this.perspective == 'black' ? [1, 7] : [2, 7])
                             }
                         }
-                    }
                 }
                 return res
         }
