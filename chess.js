@@ -8,6 +8,7 @@ class ChessGame
         // this.whitePieces = [];
         // this.blackPieces = [];
         this.needLoaded = 12;
+        this.moveLog = [];
         this.images = {};
         this.selectedSquare = null;
         this.possibleSquares = null;
@@ -50,6 +51,13 @@ class ChessGame
             return [x, 7 - y];
         } else {
             return [7 - x, y];
+        }
+    }
+
+    #logMove = (piece, oldPos, captured = null) => {
+        if (captured)
+        {
+            
         }
     }
 
