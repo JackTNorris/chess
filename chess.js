@@ -59,10 +59,12 @@ class ChessGame
         switch (piece.type)
         {
             case 'bishop':
+                variable += 'B'
                 break;
             case 'pawn':
                 break;
             case 'king':
+                variable += 'K'
                 break;
             case 'queen':
                 break;
@@ -78,7 +80,6 @@ class ChessGame
         if (captured)
         {
             algebraicNotation += "x"
-
         }
     }
 
