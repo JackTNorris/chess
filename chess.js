@@ -1,3 +1,4 @@
+'use strict'
 class ChessGame
 {
     constructor(boardWidth, boardHeight, perspective){
@@ -14,6 +15,7 @@ class ChessGame
         this.possibleSquares = null;
         this.hoveredSquare = null;
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+        this.gameLog = [];
         console.log(this.board)
         this.#initImages()
         this.#initPieces()
@@ -59,28 +61,34 @@ class ChessGame
         switch (piece.type)
         {
             case 'bishop':
-                variable += 'B'
+                variable += 'B';
                 break;
             case 'pawn':
                 break;
             case 'king':
-                variable += 'K'
+                variable += 'K';
                 break;
             case 'queen':
+                variable += 'Q';
                 break;
             case 'rook':
+                variable +='R';
                 break;
             case 'knight':
+                variable += 'N';
                 break;
         }
+        return variable;
     }
 
     #logMove = (piece, oldPos, captured = null) => {
-        let algebraicNotation = ""
+        let algebraicNotation = this.#getAlgebraicPieceVariable(piece)
         if (captured)
         {
             algebraicNotation += "x"
         }
+        algebraicNotation += piece.pos.toLowerCase()
+        return algebraicNotation
     }
 
     #mapGridToChess = (gridCoord) => {
@@ -302,6 +310,7 @@ class ChessGame
 
     // TODO: come up with a better function for possible squares search (something in O(1))
     onClickSquare = (x, y) => {
+        let capturedPiece = null
         if(this.board[x][y] != null && this.board[x][y].color == this.perspective)
         {
             this.selectedSquare = [x, y]
@@ -323,8 +332,8 @@ class ChessGame
                         const pieceToMove = this.board[this.selectedSquare[0]][this.selectedSquare[1]];
                         pieceToMove.pos = this.#mapGridToChess([x, y])
                         pieceToMove.hasMoved = true
+                        capturedPiece = this.board[x][y]
                         this.board[x][y] = pieceToMove;
-                        
                         // detecting castle-ing
                         if(pieceToMove.type == 'king')
                         {
@@ -348,6 +357,9 @@ class ChessGame
                         }
 
                         this.board[this.selectedSquare[0]][this.selectedSquare[1]] = null;
+                        const loggedMove = this.#logMove(this.board[x][y], [this.selectedSquare[0], this.selectedSquare[1]], capturedPiece)
+                        console.log("ALGEBRAIC NOTATION: ", loggedMove)
+                        this.gameLog.push(loggedMove)
                         this.selectedSquare = null;
                         this.possibleSquares = null;
                         // change perspective and flip board
