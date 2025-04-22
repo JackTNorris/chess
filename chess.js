@@ -81,6 +81,8 @@ class ChessGame
         return variable;
     }
 
+    
+    // TODO: analysis for rare cases
     #logMove = (piece, oldPos, captured = null) => {
         let algebraicNotation = this.#getAlgebraicPieceVariable(piece)
         if (captured)
@@ -363,8 +365,8 @@ class ChessGame
                         this.selectedSquare = null;
                         this.possibleSquares = null;
                         // change perspective and flip board
-                        // this.perspective = this.perspective == 'white' ? 'black' : 'white'
-                        // this.#flipBoard()
+                        this.perspective = this.perspective == 'white' ? 'black' : 'white'
+                        this.#flipBoard()
                         return
                     }
                 }
