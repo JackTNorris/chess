@@ -447,3 +447,25 @@ class ChessGame
         this.renderPieces(canvas);
     }
 }
+
+class ChessPiece {
+    constructor(color, type, pos) {
+        this.color = color;
+        this.type = type;
+        this.pos = pos;
+    }
+    getMoves() {
+        return [];
+    }
+
+}
+
+class Queen extends ChessPiece {
+    
+}
+
+class King extends ChessPiece {}
+class Bishop extends ChessPiece {}
+class Knight extends ChessPiece {}
+class Rook extends ChessPiece {}
+class Pawn extends ChessPiece {}
