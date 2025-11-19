@@ -449,23 +449,128 @@ class ChessGame
 }
 
 class ChessPiece {
-    constructor(color, type, pos) {
+    constructor(color, pos, symbol) {
         this.color = color;
-        this.type = type;
         this.pos = pos;
-    }
-    getMoves() {
-        return [];
+        this.symbol = symbol;
     }
 
+    _generateValidMovesHelper(board, directions, extend = false)
+    {
+        const validMoves = [];
+        const rows = board.length;
+        const cols = board[0].length;
+        for (const [dx, dy] of directions) {
+            let x = this.pos[0] + dx;
+            let y = this.pos[1] + dy;
+            while (x >= 0 && x < rows && y >= 0 && y < cols) {
+                if (board[x][y] === null) {
+                    validMoves.push([x, y]);
+                }
+                else {
+                    if (board[x][y].color !== this.color) {
+                        validMoves.push([x, y]);
+                    }
+                    break;
+                }
+                if (!extend) break;
+                x += dx;
+                y += dy;
+            }
+        }
+        return validMoves;
+    }
+
+    getValidMoves(board)
+    {
+        throw Error("getValidMoves method must be implemented by subclasses");
+    }
+    move(newPos)
+    {
+        this.pos = newPos;
+    }
 }
 
 class Queen extends ChessPiece {
-    
+    constructor(color, pos) {
+        super(color, pos, 'Q');
+    }
+
+    getValidMoves(board) {
+        const directions = [
+            [1, 0], [-1, 0], [0, 1], [0, -1],
+            [1, 1], [1, -1], [-1, 1], [-1, -1]
+        ];
+        return this._generateValidMovesHelper(board, directions, true);
+    }
 }
 
-class King extends ChessPiece {}
-class Bishop extends ChessPiece {}
-class Knight extends ChessPiece {}
-class Rook extends ChessPiece {}
-class Pawn extends ChessPiece {}
+class King extends ChessPiece {
+    constructor(color, pos) {
+        super(color, pos, 'K');
+    }
+    getValidMoves(board) {
+        const directions = [
+            [1, 0], [-1, 0], [0, 1], [0, -1],
+            [1, 1], [1, -1], [-1, 1], [-1, -1]
+        ];
+        return this._generateValidMovesHelper(board, directions, false);
+    }
+}
+class Bishop extends ChessPiece {
+    
+    constructor(color, pos) {
+        super(color, pos, 'B');
+    }
+    getValidMoves(board) {
+        const directions = [
+            [1, 1], [1, -1], [-1, 1], [-1, -1]
+        ];
+        return this._generateValidMovesHelper(board, directions, true);
+    }
+}
+class Knight extends ChessPiece {
+    constructor(color, pos) {
+        super(color, pos, 'K');
+    }
+    getValidMoves(board) {
+        const directions = [
+            [2, 1], [2, -1], [-2, 1], [-2, -1],
+            [1, 2], [1, -2], [-1, 2], [-1, -2]
+        ];
+        return this._generateValidMovesHelper(board, directions, false);
+    }
+}
+class Rook extends ChessPiece {
+    constructor(color, pos) {
+        super(color, pos, 'R');
+    }
+    getValidMoves(board) {
+        const directions = [
+            [1, 0], [-1, 0], [0, 1], [0, -1]
+        ];
+        return this._generateValidMovesHelper(board, directions, true);
+    }
+}
+class Pawn extends ChessPiece {
+    constructor(color, pos) {
+        super(color, pos, 'P');
+    }
+    getValidMoves(board) {
+        const directions = this.color === 'white' ? [[-1, -1], [0, -1], [1, -1]] : [[-1, 1], [0, 1], [1, 1]];
+        validMoves = [];
+        for (const [dx, dy] of directions) {
+            const x = this.pos[0] + dx;
+            const y = this.pos[1] + dy;
+            if (x >= 0 && x < board.length && y >= 0 && y < board[0].length) {
+                if (dx === 0 && board[x][y] === null) {
+                    validMoves.push([x, y]);
+                }
+                else if (dx !== 0 && board[x][y] !== null && board[x][y].color !== this.color) {
+                    validMoves.push([x, y]);
+                }
+            }
+        }
+        return validMoves;
+    }
+}
